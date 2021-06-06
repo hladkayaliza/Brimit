@@ -1,55 +1,56 @@
-import {getValue, getValueFromRadio, getValueFromCheckbox, getValueFromSelect} from './getter.js';
+import { OPTION_NAME, OPTION_STATUS } from './constants.js';
+import { getValue, getValueFromRadio, getValuesFromCheckbox, getValuesFromSelect } from './getter.js';
 
-const fNameInput = document.getElementById('FName');
-const lNameInput = document.getElementById('LName');
-const emailInput = document.getElementById('Email');
-const phoneInput = document.getElementById('Phone');
-const sexInput = document.querySelectorAll('input[name="Sex"]');
-const skillsInput = document.querySelectorAll('input[name=Skills]');
-const departmentInput = document.querySelector('select');
+const modelDOMElements = {
+    FName: document.getElementById('FName'),
+    LName: document.getElementById('LName'),
+    Email: document.getElementById('Email'),
+    Phone: document.getElementById('Phone'),
+    Sex: document.querySelectorAll('input[name="Sex"]'),
+    Skills: document.querySelectorAll('input[name=Skills]'),
+    Departments: document.querySelector('select')
+};
 
 export function mapToUserModel() {
     const model = {
-        FName: getValue(fNameInput),
-        LName: getValue(lNameInput),
-        Email: getValue(emailInput),
-        Phone: getValue(phoneInput),
-        Sex: getValueFromRadio(sexInput),
-        Skills: getValueFromCheckbox(skillsInput),
-        Departments: getValueFromSelect(departmentInput)
+        FName: getValue(modelDOMElements.FName),
+        LName: getValue(modelDOMElements.LName),
+        Email: getValue(modelDOMElements.Email),
+        Phone: getValue(modelDOMElements.Phone),
+        Sex: getValueFromRadio(modelDOMElements.Sex),
+        Skills: getValuesFromCheckbox(modelDOMElements.Skills),
+        Departments: getValuesFromSelect(modelDOMElements.Departments)
     };
 
     return model;
 }
 
 export function mapToUserForm(data) {
-    if (!!Object.keys(data).length) {
-        fNameInput.value = ((data["FName"] === "null" || String(data["FName"]) == "undefined") ? '' : data["FName"]);
-        lNameInput.value = ((data["LName"] === "null" || String(data["LName"]) == "undefined") ? '' : data["LName"]);
-        emailInput.value = ((data["Email"] === "null" || String(data["Email"]) == "undefined") ? '' : data["Email"]);
-        phoneInput.value = ((data["Phone"] === "null" || String(data["Phone"]) == "undefined") ? '' : data["Phone"]);
-        sexInput.forEach(function (item) {
-            if (item.value === data["Sex"]) {
-                item.checked = true;
-             }
-        })
-        skillsInput.forEach(function (item) {
-            if (data["Skills"] != null || data["Skills"] != undefined) {
-                data["Skills"].split(',').reduce(function ( acc, elem) {
-                    if (item.value === elem) {
-                        item.checked = true;
-                    }
-                }, 0)
+    if (data && !!Object.keys(data).length) {
+        const keys = Object.keys(modelDOMElements);
+        keys.forEach(function (key) {
+            if (key === OPTION_NAME.SEX || key === OPTION_NAME.SKILLS) {
+                applyValue(data[key], modelDOMElements[key], OPTION_STATUS.CHECKED);
+                return;
             }
-        })
-        Array.from(departmentInput.options).forEach(function (option) {
-            if (data["Departments"] != null || data["Departments"] != undefined) {
-                data["Departments"].split(',').reduce(function(acc, elem) {
-                    if (option.value === elem) {
-                        option.selected = true;
-                    }
-                },0)
+            if(key === OPTION_NAME.DEPARTMENTS) {
+                applyValue(data[key], [...modelDOMElements[key].options], OPTION_STATUS.SELECTED);
+                return;
             }
-        })
+            modelDOMElements[key].value = data[key] ? data[key] : '';
+        });
     }
+}
+
+function applyValue(val, items, prop) {
+    if(val) {
+        let valuesArray = val.split(',');
+
+        items.forEach(function (item) {
+            item[prop] = valuesArray.some(function(i) {
+                return i === item.value;
+            });
+        });
+    }
+
 }

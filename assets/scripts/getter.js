@@ -1,40 +1,37 @@
-export function getValueFromRadio(radio_input){
-    if(!!radio_input.length) {
-        let value;
-        radio_input.forEach(function(item) {
-            if(item.checked) {
-                value = item.value;
-            }
-        })
-        return value;
+export function getValueFromRadio(radioInput){
+    if(radioInput) {
+        let value = [...radioInput].filter(function(item) {
+            return item.checked;
+        });
+
+        return value.length ? value[0].value : null;
     }
 }
 
-export function getValueFromCheckbox(checkbox_input){
-    if(!!checkbox_input.length) {
-        let values = [];
-        checkbox_input.forEach(function(item) {
+export function getValuesFromCheckbox(checkboxInput){
+    if(checkboxInput) {
+        return [...checkboxInput].reduce(function(result, item) {
             if(item.checked) {
-                values.push(item.value);
+                item.checked ? result.push(item.value) : result;
             }
-        })
-        return values;
+            return result;
+        }, []);
     }
 }
 
-export function getValueFromSelect(select_input) {
-    const selectedOptions = select_input.selectedOptions;
-    if(!!selectedOptions.length) {
-        let values = [];
-        Array.from(selectedOptions).forEach(function (item) {
-            values.push(item.value);
-        })
-        return values;
+export function getValuesFromSelect(selectInput) {
+    if(selectInput) {
+        return [...selectInput.selectedOptions].reduce(function (result, item) {
+            if(item.selected) {
+                item.selected ? result.push(item.value) : result;
+            }
+            return result;
+        }, [])
     }
 }
 
 export function getValue(input) {
-    if (!!input.value) {
+    if (input) {
         return input.value;
     }
 }
