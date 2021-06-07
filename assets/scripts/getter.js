@@ -4,7 +4,7 @@ export function getValueFromRadio(radioInput){
             return item.checked;
         });
 
-        return value.length ? value[0].value : null;
+        return value.length ? value[0].value : '';
     }
 }
 

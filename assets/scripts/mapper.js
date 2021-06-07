@@ -26,7 +26,8 @@ export function mapToUserModel() {
 }
 
 export function mapToUserForm(data) {
-    if (data && !!Object.keys(data).length) {
+    
+    if (data && Object.keys(data).length) {
         const keys = Object.keys(modelDOMElements);
         keys.forEach(function (key) {
             if (key === OPTION_NAME.SEX || key === OPTION_NAME.SKILLS) {
